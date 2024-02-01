@@ -10,11 +10,11 @@ $dbConn =  connect($db);
  */
 if ($_SERVER['REQUEST_METHOD'] == 'GET')
 {
-    if (isset($_GET['idusuario']))
+    if (isset($_GET['id_cliente']))
     {
       //Mostrar un post
-      $sql = $dbConn->prepare("SELECT * FROM usuarios where idusuario=:idusuario");
-      $sql->bindValue(':idusuario', $_GET['idusuario']);
+      $sql = $dbConn->prepare("SELECT * FROM clientes where id_cliente=:id_cliente");
+      $sql->bindValue(':id', $_GET['id_cliente']);
       $sql->execute();
       header("HTTP/1.1 200 OK");
       echo json_encode(  $sql->fetch(PDO::FETCH_ASSOC)  );
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 	  }
     else {
       //Mostrar lista de post
-      $sql = $dbConn->prepare("SELECT * FROM usuarios");
+      $sql = $dbConn->prepare("SELECT * FROM clientes");
       $sql->execute();
       $sql->setFetchMode(PDO::FETCH_ASSOC);
       header("HTTP/1.1 200 OK");
@@ -35,17 +35,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET')
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
     $input = $_POST;
-    $sql = "INSERT INTO productos
-    (foto, nombre_producto, precio_venta, stock)
+    $sql = "INSERT INTO clientes
+    (nombre, telefono, telefonodos)
     VALUES
-    (:foto, :nombre_producto, :precio_venta, :stock)";
+    (:nombre, :telefono, :telefonodos)";
     $statement = $dbConn->prepare($sql);
     bindAllValues($statement, $input);
     $statement->execute();
     $postId = $dbConn->lastInsertId();
     if($postId)
     {
-      $input['id_usuario'] = $postId;
+      $input['id_cliente'] = $postId;
       header("HTTP/1.1 200 OK");
       echo json_encode($input);
       exit();
@@ -55,9 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 //Borrar
 if ($_SERVER['REQUEST_METHOD'] == 'DELETE')
 {
-	$idusuario = $_GET['idusuario'];
-  $statement = $dbConn->prepare("DELETE FROM usuarios where idusuario=:idusuario");
-  $statement->bindValue(':ididusuario', $idusuario);
+	$id_cliente = $_GET['id_cliente'];
+  $statement = $dbConn->prepare("DELETE FROM clientes where id_cliente=:id_cliente");
+  $statement->bindValue(':id_cliente', $id_cliente);
   $statement->execute();
 	header("HTTP/1.1 200 OK");
 	exit();
@@ -67,13 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'DELETE')
 if ($_SERVER['REQUEST_METHOD'] == 'PUT')
 {
     $input = $_GET;
-    $postId = $input['idusuario'];
+    $postId = $input['id_cliente'];
     $fields = getParams($input);
 
     $sql = "
-          UPDATE usuarios
+          UPDATE clientes
           SET $fields
-          WHERE idusuario='$postId'
+          WHERE id_cliente='$postId'
            ";
 
     $statement = $dbConn->prepare($sql);
